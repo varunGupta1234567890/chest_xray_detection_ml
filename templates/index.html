@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid X-Ray AI</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background: white;
+            color: #2a5298;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn:hover {
+            background: #ddd;
+        }
+
+        #preview {
+            margin-top: 15px;
+            max-width: 200px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #00ffcc;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00ccaa;
+        }
+
+        .camera-link {
+            margin-top: 20px;
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .camera-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>🧠 AI X-Ray Detector</h1>
+        <p>Detect Covid, Viral Pneumonia, Normal</p>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            
+            <!-- Upload Button -->
+            <label class="upload-btn">
+                📂 Choose Image
+                <input type="file" name="file" accept="image/*" onchange="previewImage(event)">
+            </label>
+
+            <!-- Preview -->
+            <img id="preview">
+
+            <!-- Submit -->
+            <br>
+            <button type="submit">🚀 Predict</button>
+        </form>
+
+        <!-- Camera -->
+        <a href="/camera" class="camera-link">📷 Open Camera</a>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const img = document.getElementById('preview');
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>

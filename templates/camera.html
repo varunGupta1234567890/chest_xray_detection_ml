@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Capture</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        video, canvas {
+            width: 100%;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn {
+            margin: 10px 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .capture {
+            background: #00ffcc;
+            color: black;
+        }
+
+        .switch {
+            background: #ffcc00;
+            color: black;
+        }
+
+        .back {
+            background: white;
+            color: #243b55;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        #preview {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #loading {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>📷 Camera AI</h1>
+
+    <video id="camera" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <!-- Preview -->
+    <img id="preview">
+
+    <br>
+
+    <button class="btn capture" id="capture">📸 Capture</button>
+    <button class="btn switch" id="switch">🔄 Switch Camera</button>
+
+    <div id="loading">⏳ Processing...</div>
+
+    <div id="result"></div>
+
+    <a href="/" class="btn back">⬅ Back</a>
+</div>
+
+<script>
+    const video = document.getElementById('camera');
+    const canvas = document.getElementById('canvas');
+    const preview = document.getElementById('preview');
+    const captureBtn = document.getElementById('capture');
+    const switchBtn = document.getElementById('switch');
+    const resultDiv = document.getElementById('result');
+    const loading = document.getElementById('loading');
+
+    let currentCamera = "user"; // front camera
+
+    async function startCamera() {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentCamera }
+        });
+        video.srcObject = stream;
+    }
+
+    startCamera();
+
+    // Switch Camera
+    switchBtn.onclick = async () => {
+        currentCamera = currentCamera === "user" ? "environment" : "user";
+        startCamera();
+    };
+
+    // Capture
+    captureBtn.onclick = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+
+        canvas.toBlob(blob => {
+            preview.src = URL.createObjectURL(blob);
+            preview.style.display = "block";
+
+            const formData = new FormData();
+            formData.append('file', blob, 'capture.jpg');
+
+            loading.style.display = "block";
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(data => {
+                loading.style.display = "none";
+                resultDiv.innerHTML = data;
+            })
+            .catch(() => {
+                loading.style.display = "none";
+                resultDiv.innerHTML = "<p style='color:red;'>Error occurred</p>";
+            });
+        });
+    };
+</script>
+
+</body>
+</html>
